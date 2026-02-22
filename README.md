@@ -28,18 +28,26 @@ npm install
 # Copy environment file
 cp .env.example .env
 
-# Edit .env with your configuration
+# Edit .env with your configuration (see ENV_SETUP.md for details)
+nano .env
 ```
 
 ## Environment Variables
 
+See [ENV_SETUP.md](ENV_SETUP.md) for detailed environment configuration.
+
+**Quick reference:**
+
 ```env
-PORT=3001
+PORT=3002
 HOST=0.0.0.0
 NODE_ENV=development
+LOG_LEVEL=info
 MONGODB_URI=mongodb://localhost:27017/sunbar
 CORS_ORIGIN=http://localhost:3000
 ```
+
+> **Note:** Environment variables are loaded automatically using `dotenv` when the server starts.
 
 ## Development
 

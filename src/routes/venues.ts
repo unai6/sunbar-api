@@ -1,12 +1,20 @@
 import { FastifyInstance } from 'fastify'
-import { Venue, IVenue } from '../models/venue.model'
+import { FilterQuery } from 'mongoose'
+import { IVenue, Venue } from '../models/venue.model'
 import {
+  bulkUpsertSchema,
   createVenueSchema,
-  updateVenueSchema,
   getVenueSchema,
   getVenuesSchema,
-  bulkUpsertSchema
+  updateVenueSchema
 } from '../schemas/venue.schema'
+
+/**
+ * MongoDB Error with code property
+ */
+interface MongoError extends Error {
+  code?: number
+}
 
 /**
  * Venue Routes
@@ -41,8 +49,9 @@ export default async function venueRoutes(fastify: FastifyInstance) {
           success: true,
           data: venue
         })
-      } catch (error: any) {
-        if (error.code === 11000) {
+      } catch (error: unknown) {
+        const mongoError = error as MongoError
+        if (mongoError.code === 11000) {
           return reply.code(409).send({
             success: false,
             error: 'Venue with this ID already exists'
@@ -170,7 +179,7 @@ export default async function venueRoutes(fastify: FastifyInstance) {
           skip?: number
         }
 
-        const query: any = {}
+        const query: FilterQuery<IVenue> = {}
 
         // Bounding box filter
         if (south !== undefined && west !== undefined && north !== undefined && east !== undefined) {

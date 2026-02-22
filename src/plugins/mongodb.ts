@@ -1,3 +1,4 @@
+import chalk from 'chalk'
 import { FastifyInstance, FastifyPluginOptions } from 'fastify'
 import fp from 'fastify-plugin'
 import mongoose from 'mongoose'
@@ -8,25 +9,38 @@ import mongoose from 'mongoose'
  */
 async function mongodbPlugin(
   fastify: FastifyInstance,
-  options: FastifyPluginOptions
+  _options: FastifyPluginOptions
 ) {
   const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/sunbar'
 
   try {
-    await mongoose.connect(mongoUri)
-    fastify.log.info('MongoDB connected successfully')
+    // Connect with explicit timeout and options
+    await mongoose.connect(mongoUri, {
+      serverSelectionTimeoutMS: 5000, // Fail fast if MongoDB is not available
+      socketTimeoutMS: 45000
+    })
+
+    console.log(chalk.green('  ✅ MongoDB connected successfully'))
 
     // Graceful shutdown
     fastify.addHook('onClose', async () => {
       await mongoose.connection.close()
-      fastify.log.info('MongoDB connection closed')
+      console.log(chalk.gray('  🔌 MongoDB connection closed'))
     })
   } catch (error) {
-    fastify.log.error('MongoDB connection error:', error)
-    throw error
+    console.log(chalk.red('  ❌ MongoDB connection failed'))
+    console.log(chalk.yellow('  ⚠️  Server will continue without MongoDB'))
+    console.log(
+      chalk.gray(
+        '     Database operations will fail until MongoDB is available'
+      )
+    )
+    // Don't throw - allow server to start even if MongoDB is not available
+    // This prevents the plugin timeout error
   }
 }
 
 export default fp(mongodbPlugin, {
-  name: 'mongodb'
+  name: 'mongodb',
+  fastify: '4.x'
 })

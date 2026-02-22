@@ -6,15 +6,15 @@ import mongoose, { Document, Schema } from 'mongoose'
 export interface IVenue extends Document {
   // Unique identifier (hash of OSM ID + type)
   venueId: string
-  
+
   // Original Overpass/OSM data
   osmId: string
   osmType: 'node' | 'way' | 'relation'
-  
+
   // Core venue data
   name: string
   venueType: string
-  
+
   // Geolocation
   latitude: number
   longitude: number
@@ -22,7 +22,7 @@ export interface IVenue extends Document {
     type: 'Point'
     coordinates: [number, number] // [longitude, latitude]
   }
-  
+
   // Venue attributes
   outdoorSeating?: boolean
   address?: {
@@ -35,7 +35,7 @@ export interface IVenue extends Document {
   phone?: string
   website?: string
   openingHours?: string
-  
+
   // Metadata
   lastSyncedOverpass?: Date
   createdAt: Date
