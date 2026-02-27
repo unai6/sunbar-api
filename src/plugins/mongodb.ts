@@ -16,8 +16,7 @@ async function mongodbPlugin(
   try {
     // Connect with explicit timeout and options
     await mongoose.connect(mongoUri, {
-      serverSelectionTimeoutMS: 5000, // Fail fast if MongoDB is not available
-      socketTimeoutMS: 45000
+      serverSelectionTimeoutMS: 5000 // Fail fast if MongoDB is not available
     })
 
     console.log(chalk.green('  ✅ MongoDB connected successfully'))
