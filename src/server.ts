@@ -3,7 +3,8 @@ import chalk from 'chalk'
 import 'dotenv/config'
 import Fastify from 'fastify'
 import mongodbPlugin from './plugins/mongodb'
-import venueRoutes from './routes/venues'
+import venueRoutes from './api/venues/venues.routes'
+import searchRoutes from './api/search/search.routes'
 
 // Log environment loading (only in development)
 if (process.env.NODE_ENV === 'development') {
@@ -32,16 +33,32 @@ const fastify = Fastify({
 /**
  * Server Configuration
  */
-const PORT = parseInt(process.env.PORT || '3002', 10)
+const PORT = Number.parseInt(process.env.PORT || '3002', 10)
 const HOST = process.env.HOST || '0.0.0.0'
+
+/**
+ * Parse allowed CORS origins from environment.
+ * CORS_ORIGIN supports comma-separated values, e.g.:
+ *   http://localhost:3000,tauri://localhost,http://tauri.localhost
+ */
+function parseCorsOrigins(): string | string[] | RegExp {
+  const raw = process.env.CORS_ORIGIN || 'http://localhost:3000'
+  const origins = raw.split(',').map((o) => o.trim()).filter(Boolean)
+
+  // Always allow the standard Tauri webview origins so the binary works out of the box
+  const tauriOrigins = ['tauri://localhost', 'http://tauri.localhost', 'https://tauri.localhost']
+  const merged = Array.from(new Set([...origins, ...tauriOrigins]))
+
+  return merged.length === 1 ? merged[0] : merged
+}
 
 /**
  * Register Plugins
  */
 async function registerPlugins() {
-  // CORS
+  // CORS — allow configured origins + Tauri webview origins
   await fastify.register(cors, {
-    origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+    origin: parseCorsOrigins(),
     credentials: true,
   })
 
@@ -61,8 +78,11 @@ async function registerRoutes() {
     }
   })
 
-  // API routes
+  // GET /api/venues — Overpass query with shadow analysis + write-through cache
   await fastify.register(venueRoutes, { prefix: '/api/venues' })
+
+  // GET /api/search  +  GET /api/reverse-geocode
+  await fastify.register(searchRoutes, { prefix: '/api' })
 }
 
 /**

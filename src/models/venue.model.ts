@@ -3,7 +3,7 @@ import mongoose, { Document, Schema } from 'mongoose'
 /**
  * Venue Document Interface
  */
-export interface IVenue extends Document {
+export type IVenue = Document & {
   // Unique identifier (hash of OSM ID + type)
   venueId: string
 
