@@ -1,5 +1,5 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
-import { NominatimGateway } from '../../contexts/nominatim/gateways/nominatim.gateway'
+import { NominatimGateway } from './gateways/nominatim.gateway'
 
 export type SearchQuery = {
   q: string
