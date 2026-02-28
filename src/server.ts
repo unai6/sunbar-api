@@ -8,7 +8,7 @@ import searchRoutes from './api/search/search.routes'
 
 // Log environment loading (only in development)
 if (process.env.NODE_ENV === 'development') {
-  console.log(chalk.gray('📝 Environment variables loaded from .env file'))
+  console.log(chalk.gray('📝 Environme nt variables loaded from .env file'))
 }
 
 /**

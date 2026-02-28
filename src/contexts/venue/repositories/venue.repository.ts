@@ -2,6 +2,13 @@ import { IVenue, Venue } from '../../../models/venue.model'
 import type { ParsedVenue } from '../../overpass/mappers/overpass.mapper'
 
 export class VenueRepository {
+  async findByBbox(south: number, west: number, north: number, east: number): Promise<IVenue[]> {
+    return Venue.find({
+      latitude: { $gte: south, $lte: north },
+      longitude: { $gte: west, $lte: east }
+    }).lean() as unknown as IVenue[]
+  }
+
   async upsertMany(venues: ParsedVenue[]): Promise<void> {
     if (venues.length === 0) return
 
