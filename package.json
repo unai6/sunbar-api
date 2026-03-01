@@ -4,7 +4,7 @@
   "description": "Fastify backend API for SunBar venue management",
   "main": "dist/server.js",
   "scripts": {
-    "dev": "NODE_ENV=production tsx watch src/server.ts",
+    "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
     "lint": "eslint src --ext .ts",

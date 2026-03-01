@@ -26,7 +26,7 @@ async function mongodbPlugin(
       await mongoose.connection.close()
       console.log(chalk.gray('  🔌 MongoDB connection closed'))
     })
-  } catch (error) {
+  } catch {
     console.log(chalk.red('  ❌ MongoDB connection failed'))
     console.log(chalk.yellow('  ⚠️  Server will continue without MongoDB'))
     console.log(
